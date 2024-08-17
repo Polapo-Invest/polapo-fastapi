@@ -7,6 +7,8 @@ name = "pypi"
 flask = "*"
 fastapi = "*"
 uvicorn = {version = "*", extras = ["standard"]}
+yfinance = "*"
+yahooquery = "*"
 
 [dev-packages]
 
