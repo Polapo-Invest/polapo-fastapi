@@ -100,3 +100,38 @@ async def generate_report(request: Request):
         "asset_performance_img": asset_performance_img,
         "portfolio_performance_img": portfolio_performance_img
     }
+
+@app.post('/generate_html_report')
+async def generate_html_report(request: Request):
+    data = await request.json()
+    if data is None:
+        return {"error": "No input data provided"}, 400
+    
+    cs_model = data.get('cs_model')
+    ts_model = data.get('ts_model')
+    tickers = data.get('tickers')
+    startyear = data.get('startyear')
+    print(data)
+    
+    if not cs_model or not ts_model:
+        return {"error": "Missing model selection"}, 400
+
+    df = get_etf_price_data(tickers, startyear)
+
+    engine = GEMTU772(df)
+    res = engine.run(cs_model=cs_model, ts_model=ts_model, cost=0.0005)
+    port_weights, port_asset_rets, port_rets = res
+
+    report_html = ""
+    if not isinstance(port_rets.index, pd.DatetimeIndex):
+        port_rets.index = pd.to_datetime(port_rets.index)
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as tmp_file:
+        qs.reports.html(port_rets, output=tmp_file.name)
+        tmp_file.seek(0)
+        report_html = tmp_file.read().decode('utf-8')
+
+    print("============")
+    print(res)
+    print(type(report_html))
+
+    return {"report_html": report_html}
