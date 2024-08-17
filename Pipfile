@@ -9,6 +9,12 @@ fastapi = "*"
 uvicorn = {version = "*", extras = ["standard"]}
 yfinance = "*"
 yahooquery = "*"
+matplotlib = "*"
+"google.generativeai" = "*"
+quantstats = "*"
+sqlmodel = "*"
+numpy = "==1.26.4"
+ipython = "*"
 
 [dev-packages]
 
